@@ -7,7 +7,7 @@ using UnityEngine.Rendering.HighDefinition;
 public class PotionComposition : MonoBehaviour
 {
     GameObject player;
-    static float effectMod = 4f;
+    static float effectMod = 6f;
 
 
     static float scaleMod = 1f;
@@ -46,8 +46,11 @@ public class PotionComposition : MonoBehaviour
 
 
         player = GameObject.FindGameObjectWithTag("Player");
-        player.transform.localScale = Vector3.one * scaleMod;
+        player.transform.localScale *= scaleMod;
         player.transform.Translate(Vector3.up * scaleMod);
+        player.GetComponentInChildren<Movement>().speed *= scaleMod;
+        player.GetComponentInChildren<Movement>().jumpForce *= Mathf.Sqrt(scaleMod);
+        player.GetComponentInChildren<Movement>().groundDistance *= scaleMod;
 
         player.GetComponentInChildren<Camera>().fieldOfView = cameraFOV;
         player.GetComponentInChildren<Rigidbody>().mass *= scaleMod;
@@ -101,12 +104,12 @@ public class PotionComposition : MonoBehaviour
                 break;
             case "Fightshade":
                 scaleMod *= 1.2f;
-                cameraFOV *= 1.05f;
+                cameraFOV *= 1.025f;
                 fogAttenuation *= 1.2f;
                 break;
             case "Floppy":
                 scaleMod /= 1.2f;
-                cameraFOV /= 1.05f;
+                cameraFOV /= 1.025f;
                 fogAttenuation /= 1.2f;
                 break;
         }

@@ -8,6 +8,7 @@ public class PotionPickup : MonoBehaviour
     Camera mainCamera;
     float pickupTime = .7f;
     GameObject hitPotion;
+
     void Start()
     {
         mainCamera = GetComponent<Camera>();
@@ -51,6 +52,10 @@ public class PotionPickup : MonoBehaviour
 
         potion.transform.parent = transform.parent;
         potionPickedUp = true;
-        
+    }
+
+    void OnDestroy()
+    {
+        potionPickedUp = false;    
     }
 }

@@ -63,4 +63,9 @@ public class Door : MonoBehaviour
 
         isMoving = false;
     }
+
+    void OnDestroy()
+    {
+        doorsLocked = false;    
+    }
 }
