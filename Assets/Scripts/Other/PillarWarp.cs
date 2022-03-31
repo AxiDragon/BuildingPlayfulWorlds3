@@ -28,8 +28,10 @@ public class PillarWarp : MonoBehaviour
     {
         if (other.tag == "Player")
         {
+            UIPrompts.fadeIn = true;
+            UIPrompts.UpdateUIText("E - Return");
             pillarAction = () => { StartCoroutine(fade.Fade(false, .5f, sceneTransfer)); };
-            StartCoroutine(UIPrompts.UIFade(true, "E - Return"));
+            //StartCoroutine(UIPrompts.UIFade(true, "E - Return"));
         }
     }
 
@@ -37,8 +39,9 @@ public class PillarWarp : MonoBehaviour
     {
         if (other.tag == "Player")
         {
+            UIPrompts.fadeIn = false;
             pillarAction = () => { };
-            StartCoroutine(UIPrompts.UIFade(false, null));
+            //StartCoroutine(UIPrompts.UIFade(false, null));
         }
     }
 }

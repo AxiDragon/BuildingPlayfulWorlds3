@@ -7,6 +7,8 @@ using UnityEngine.Rendering.HighDefinition;
 public class PotionComposition : MonoBehaviour
 {
     GameObject player;
+    static float effectMod = 4f;
+
 
     static float scaleMod = 1f;
     static float cameraFOV = 60f;
@@ -26,7 +28,7 @@ public class PotionComposition : MonoBehaviour
     static Color fogHue = new Color(.753957f, 1f, .7411765f);
     static Color vignetteHue = new Color(1f, .9149776f, .7207547f);
 
-    //Volume postProcessing;
+    Volume postProcessing;
     Fog fog;
     Bloom bloom;
     ShadowsMidtonesHighlights shadowsMidtonesHighlights;
@@ -35,16 +37,22 @@ public class PotionComposition : MonoBehaviour
 
     void Start()
     {
-        //postProcessing = GetComponent<Volume>();
-        
+        postProcessing = GetComponent<Volume>();
+        postProcessing.profile.TryGet(out fog);
+        postProcessing.profile.TryGet(out bloom);
+        postProcessing.profile.TryGet(out shadowsMidtonesHighlights);
+        postProcessing.profile.TryGet(out colorAdjustments);
+        postProcessing.profile.TryGet(out vignette);
+
+
         player = GameObject.FindGameObjectWithTag("Player");
         player.transform.localScale = Vector3.one * scaleMod;
         player.transform.Translate(Vector3.up * scaleMod);
 
         player.GetComponentInChildren<Camera>().fieldOfView = cameraFOV;
+        player.GetComponentInChildren<Rigidbody>().mass *= scaleMod;
 
-
-        fog.meanFreePath.value = fogAttenuation;
+        fog.meanFreePath = new MinFloatParameter(fogAttenuation, 1f);
         fog.tint = new ColorParameter(fogHue);
 
         bloom.intensity = new ClampedFloatParameter(bloomIntensity, 0f, 1f);
@@ -63,33 +71,33 @@ public class PotionComposition : MonoBehaviour
         vignette.color = new ColorParameter(vignetteHue);
     }
 
-    static public void AddIngredient(string plantName)
+    public static void AddIngredient(string plantName)
     {
         switch (plantName)
         {
             case "Faconite":
-                bloomIntensity += .5f;
-                bloomScattering += .5f;
-                saturation += 5f;
-                exposure += .5f;
-                contrast += .5f;
+                bloomIntensity += .5f * effectMod;
+                bloomScattering += .5f * effectMod;
+                saturation += 5f * effectMod;
+                exposure += .5f * effectMod;
+                contrast += .5f * effectMod;
                 break;
             case "Fantle":
-                contrast -= 2.5f;
-                shadowHue += new Vector4(-.05f, .05f, -.05f, -.05f);
-                highlightHue += new Vector4(-.05f, .05f, -.05f, .05f);
-                adjustmentHue += new Color(.05f, -.05f, -.05f);
+                contrast -= 2.5f * effectMod;
+                shadowHue += new Vector4(-.05f, .05f, -.05f, -.05f) * effectMod;
+                highlightHue += new Vector4(-.05f, .05f, -.05f, .05f) * effectMod;
+                adjustmentHue += new Color(.05f, -.05f, -.05f) * effectMod;
                 break;
             case "Fenbane":
-                adjustmentHue += new Color(-.05f, .05f, -.05f);
-                shadowHue += new Vector4(-.05f, .05f, -.05f, 0f);
-                midtoneHue += new Vector4(-.05f, .05f, -.05f, 0f);
-                highlightHue += new Vector4(-.05f, .05f, -.05f, 0f);
+                adjustmentHue += new Color(-.05f, .05f, -.05f) * effectMod;
+                shadowHue += new Vector4(-.05f, .05f, -.05f, 0f) * effectMod;
+                midtoneHue += new Vector4(-.05f, .05f, -.05f, 0f) * effectMod;
+                highlightHue += new Vector4(-.05f, .05f, -.05f, 0f) * effectMod;
                 break;
             case "Fervain":
-                bloomHue += new Color(.05f, -.03f, -.01f);
-                fogHue += new Color(.05f, -.03f, -.01f);
-                vignetteHue += new Color(.05f, -.03f, -.01f);
+                bloomHue += new Color(.05f, -.03f, -.01f) * effectMod;
+                fogHue += new Color(.05f, -.03f, -.01f) * effectMod;
+                vignetteHue += new Color(.05f, -.03f, -.01f) * effectMod;
                 break;
             case "Fightshade":
                 scaleMod *= 1.2f;

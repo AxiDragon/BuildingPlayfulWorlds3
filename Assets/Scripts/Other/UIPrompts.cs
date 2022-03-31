@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class UIPrompts : MonoBehaviour
 {
-    static public Text[] texts;
+    public static Text[] texts;
     static CanvasGroup group;
     static float fadeTime = 1f;
-    static bool fadingIn;
+    public static bool fadeIn = false;
 
     void Start()
     {
@@ -16,13 +16,24 @@ public class UIPrompts : MonoBehaviour
         group = GetComponent<CanvasGroup>();
     }
 
+    void Update() => group.alpha += fadeIn ? (1f * Time.deltaTime) / fadeTime : (-1f * Time.deltaTime) / fadeTime;
 
-    void Update()
+
+    public static void UpdateUIText(string promptText)
     {
-        float alphaAdjustment = fadingIn ? (1f * Time.deltaTime) / fadeTime : (-1f * Time.deltaTime) / fadeTime;
-        group.alpha += alphaAdjustment;
+        foreach (Text prompt in texts)
+            prompt.text = promptText;
     }
-    //static public IEnumerator UIFade(bool fadingIn, string promptText)
+
+    void OnDestroy()
+    {
+        group = null;
+        texts = null;
+        fadeIn = false;
+    }
+}
+
+    //public static IEnumerator UIFade(bool fadingIn, string promptText)
     //{
     //    if (fadingIn)
     //        foreach (Text prompt in texts)
@@ -37,16 +48,3 @@ public class UIPrompts : MonoBehaviour
     //        yield return null;
     //    }
     //}
-
-    static public void UpdateUIText(string promptText)
-    {
-        foreach (Text prompt in texts)
-            prompt.text = promptText;
-    }
-
-    void OnDestroy()
-    {
-        group = null;
-        texts = null;
-    }
-}

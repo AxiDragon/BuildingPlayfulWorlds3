@@ -29,7 +29,12 @@ public class Door : MonoBehaviour
         if (other.tag == "Player")
         {
             inRange = true;
-            StartCoroutine(UIPrompts.UIFade(true, "E - Use Door"));
+            UIPrompts.fadeIn = true;
+
+            string promptAdd = (name.Contains("1") && PotionPickup.potionPickedUp) ? " and drink Potion" : null;
+            UIPrompts.UpdateUIText("E - Use Door" + promptAdd);
+
+            //StartCoroutine(UIPrompts.UIFade(true, "E - Use Door"));
         }
     }
 
@@ -38,7 +43,8 @@ public class Door : MonoBehaviour
         if (other.tag == "Player")
         {
             inRange = false;
-            StartCoroutine(UIPrompts.UIFade(false, null));
+            UIPrompts.fadeIn = false;
+            //StartCoroutine(UIPrompts.UIFade(false, null));
         }
     }
 
