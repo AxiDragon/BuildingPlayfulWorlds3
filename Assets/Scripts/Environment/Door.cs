@@ -9,8 +9,13 @@ public class Door : MonoBehaviour
     bool isMoving, inRange, open = false;
     public static bool doorsLocked = false;
     Vector3 pivot;
+    bool finalDoor;
 
-    void Start() => pivot = GetComponentInChildren<PivotComponent>().gameObject.transform.position;
+    void Start()
+    {
+        finalDoor = name.Contains("1");
+        pivot = GetComponentInChildren<PivotComponent>().gameObject.transform.position;
+    }
 
     void Update()
     {
@@ -20,8 +25,17 @@ public class Door : MonoBehaviour
         if (open && !inRange && !isMoving)
             StartCoroutine(DoorSequence(open ? closeRotation : openRotation));
 
-        if (inRange && Input.GetKeyDown(KeyCode.E) && !isMoving)
-            StartCoroutine(DoorSequence(open ? closeRotation : openRotation));
+        switch (finalDoor)
+        {
+            case true:
+                if ((inRange && Input.GetKeyDown(KeyCode.E) && !isMoving && PotionComposition.hasIngredients))
+                    StartCoroutine(DoorSequence(open ? closeRotation : openRotation));
+                break;
+            case false:
+                if ((inRange && Input.GetKeyDown(KeyCode.E) && !isMoving))
+                    StartCoroutine(DoorSequence(open ? closeRotation : openRotation));
+                break;
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -31,8 +45,30 @@ public class Door : MonoBehaviour
             inRange = true;
             UIPrompts.fadeIn = true;
 
-            string promptAdd = (name.Contains("1") && PotionPickup.potionPickedUp) ? " and drink Potion" : null;
-            UIPrompts.UpdateUIText("E - Use Door" + promptAdd);
+            string prompt;
+
+            switch (finalDoor)
+            {
+                case true:
+                    if (!PotionPickup.potionPickedUp)
+                    {
+                        prompt = "Pick up the potion on the table first, please";
+                        break;
+                    }
+                    if (!PotionComposition.hasIngredients)
+                    {
+                        prompt = "Go get some ingredients from the crates first, please";
+                        break;
+                    }
+                    prompt = "E - Use Door and drink Potion";
+                    break;
+                case false:
+                    prompt = "E - Use Door";
+                    break;
+            }
+            
+            //prompt = (name.Contains("1") && PotionPickup.potionPickedUp) ? " and drink Potion" : null;
+            UIPrompts.UpdateUIText(prompt);
 
             //StartCoroutine(UIPrompts.UIFade(true, "E - Use Door"));
         }

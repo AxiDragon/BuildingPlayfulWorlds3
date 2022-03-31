@@ -7,8 +7,8 @@ using UnityEngine.Rendering.HighDefinition;
 public class PotionComposition : MonoBehaviour
 {
     GameObject player;
-    static float effectMod = 6f;
-
+    static float effectMod = 15f;
+    public static bool hasIngredients;
 
     static float scaleMod = 1f;
     static float cameraFOV = 60f;
@@ -22,7 +22,7 @@ public class PotionComposition : MonoBehaviour
     static Vector4 shadowHue = new Vector4(.95f, .9f, 1f, 1f);
     static Vector4 midtoneHue = new Vector4(1f, .96f, .98f, 1f);
     static Vector4 highlightHue = new Vector4(1f, .86f, .91f, 1f);
-    
+
     static Color adjustmentHue = new Color(1f, .9372549f, .9647059f);
     static Color bloomHue = new Color(0f, .8778653f, 1f);
     static Color fogHue = new Color(.753957f, 1f, .7411765f);
@@ -37,6 +37,8 @@ public class PotionComposition : MonoBehaviour
 
     void Start()
     {
+        effectMod = Mathf.Clamp(effectMod, 0.05f, 25f);
+
         postProcessing = GetComponent<Volume>();
         postProcessing.profile.TryGet(out fog);
         postProcessing.profile.TryGet(out bloom);
@@ -44,16 +46,15 @@ public class PotionComposition : MonoBehaviour
         postProcessing.profile.TryGet(out colorAdjustments);
         postProcessing.profile.TryGet(out vignette);
 
-
         player = GameObject.FindGameObjectWithTag("Player");
         player.transform.localScale *= scaleMod;
         player.transform.Translate(Vector3.up * scaleMod);
-        player.GetComponentInChildren<Movement>().speed *= scaleMod;
-        player.GetComponentInChildren<Movement>().jumpForce *= Mathf.Sqrt(scaleMod);
+        player.GetComponentInChildren<Movement>().speed *= (scaleMod + 1f);
+        player.GetComponentInChildren<Movement>().jumpForce *= (scaleMod + 1f);
         player.GetComponentInChildren<Movement>().groundDistance *= scaleMod;
 
         player.GetComponentInChildren<Camera>().fieldOfView = cameraFOV;
-        player.GetComponentInChildren<Rigidbody>().mass *= scaleMod;
+        player.GetComponentInChildren<Rigidbody>().mass *= Mathf.Sqrt(scaleMod);
 
         fog.meanFreePath = new MinFloatParameter(fogAttenuation, 1f);
         fog.tint = new ColorParameter(fogHue);
@@ -76,6 +77,8 @@ public class PotionComposition : MonoBehaviour
 
     public static void AddIngredient(string plantName)
     {
+        hasIngredients = true;
+
         switch (plantName)
         {
             case "Faconite":
@@ -113,5 +116,26 @@ public class PotionComposition : MonoBehaviour
                 fogAttenuation /= 1.2f;
                 break;
         }
+    }
+
+    void OnDestroy()
+    {
+        scaleMod = 1f;
+        cameraFOV = 60f;
+        fogAttenuation = 25f;
+        bloomIntensity = .6f;
+        bloomScattering = .8f;
+        saturation = 40f;
+        exposure = .4f;
+        contrast = 10f;
+
+        shadowHue = new Vector4(.95f, .9f, 1f, 1f);
+        midtoneHue = new Vector4(1f, .96f, .98f, 1f);
+        highlightHue = new Vector4(1f, .86f, .91f, 1f);
+
+        adjustmentHue = new Color(1f, .9372549f, .9647059f);
+        bloomHue = new Color(0f, .8778653f, 1f);
+        fogHue = new Color(.753957f, 1f, .7411765f);
+        vignetteHue = new Color(1f, .9149776f, .7207547f);
     }
 }

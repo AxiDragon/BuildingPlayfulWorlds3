@@ -47,12 +47,13 @@ public class Movement : MonoBehaviour
         moveVector.Set(horizontal, 0f, vertical);
         moveVector.Normalize();
         moveVector = Quaternion.AngleAxis(transform.eulerAngles.y, Vector3.up) * moveVector * speedMod * Time.deltaTime;
+
+        rb.MovePosition(rb.position + moveVector * Time.deltaTime);
+        rb.AddForce(moveVector);
     }
 
     void FixedUpdate()
     {
-        rb.MovePosition(rb.position + moveVector);
-        rb.AddForce(moveVector);
         rb.angularVelocity = Vector3.zero;
     }
 }
