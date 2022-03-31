@@ -27,7 +27,7 @@ public class Movement : MonoBehaviour
         }
 
         speed *= transform.lossyScale.x;
-        jumpForce *= transform.lossyScale.x;
+        jumpForce *= Mathf.Sqrt(transform.lossyScale.x);
     }
 
     void Update()
@@ -53,5 +53,6 @@ public class Movement : MonoBehaviour
     {
         rb.MovePosition(rb.position + moveVector);
         rb.AddForce(moveVector);
+        rb.angularVelocity = Vector3.zero;
     }
 }

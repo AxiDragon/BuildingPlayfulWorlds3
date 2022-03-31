@@ -31,9 +31,7 @@ public class OpenDoor : MonoBehaviour
 
     IEnumerator OpenDoorSequence(GameObject door, Vector3 pivot)
     {
-        print("trying!");
-
-        while (door.transform.eulerAngles.y != rotation)
+        while (door.transform.rotation.y != rotation)
         {
             door.transform.RotateAround(pivot, Vector3.up, rotation * Time.deltaTime / rotationTime);
             yield return null;
